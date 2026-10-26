@@ -1,0 +1,256 @@
+:root {
+  --color-ink: #000000;
+  --color-carbon: #0b0908;
+  --color-graphite: #1a1512;
+  --color-sand: #d9a97e;
+  --color-bone: #f4ece4;
+  --color-ash: #9c9089;
+  --color-field-border: #3a3230;
+
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --bs-body-bg: var(--color-ink);
+  --bs-body-color: var(--color-ash);
+  --bs-emphasis-color: var(--color-bone);
+  --bs-border-color: var(--color-graphite);
+  --bs-link-color: var(--color-sand);
+  --bs-link-color-rgb: 217, 169, 126;
+  --bs-link-hover-color: var(--color-bone);
+  --bs-font-sans-serif: var(--font-body);
+  --bs-body-font-family: var(--font-body);
+}
+
+html, body {
+  background-color: var(--color-ink);
+}
+
+body {
+  color: var(--color-bone);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-bone);
+  outline-offset: 2px;
+}
+
+/* Bootstrap paints its own focus ring on several components as a literal
+   blue box-shadow (.nav-link:focus-visible, .btn:focus-visible via
+   --bs-btn-focus-shadow-rgb) rather than through a variable the root theme
+   reaches, so the global :focus-visible outline above gets silently
+   replaced by Bootstrap blue on nav links and buttons. Re-assert the bone
+   ring explicitly wherever Bootstrap's own rule wins on specificity. */
+/* outline-offset sign follows the control's fill, not a fixed convention:
+   full-bleed controls (nav links, accordion buttons) sit flush against
+   their section, so the ring is inset (-2px) or it would be clipped or
+   overlap a neighbour; plated controls (.btn-sand/.btn-ghost) have their
+   own background and margin around them, so the ring sits outset (+2px)
+   to read as a halo around the plate rather than a line through it. Keep
+   this split — do not "tidy" both to the same sign. */
+.nav-link:focus-visible {
+  outline: 2px solid var(--color-bone);
+  outline-offset: -2px;
+  box-shadow: none;
+}
+.btn-sand:focus-visible,
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--color-bone);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+::selection {
+  background: var(--color-sand);
+  color: var(--color-ink);
+}
+
+.type-display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 118, "wght" 800;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--color-bone);
+}
+
+.type-subhead {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 110, "wght" 700;
+  line-height: 1.05;
+  color: var(--color-bone);
+}
+
+.type-mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ash);
+}
+
+.type-mono-sand { color: var(--color-sand); }
+
+.type-price { font-size: 3.5rem; }
+
+.btn-sand {
+  background: var(--color-sand);
+  color: var(--color-ink);
+  border: 0;
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.6rem;
+}
+.btn-sand:hover, .btn-sand:focus-visible {
+  background: var(--color-bone);
+  color: var(--color-ink);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-bone);
+  border: 1px solid var(--color-graphite);
+  border-radius: 0;
+}
+.btn-ghost:hover { border-color: var(--color-sand); color: var(--color-bone); }
+
+.section {
+  padding: 6rem 0;
+  border-top: 1px solid var(--color-graphite);
+}
+@media (min-width: 768px) { .section { padding: 8rem 0; } }
+
+.section-carbon { background: var(--color-carbon); }
+.rule { border: 0; border-top: 1px solid var(--color-graphite); opacity: 1; }
+
+.navbar { background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); border-color: var(--color-graphite) !important; }
+.navbar .nav-link { font-family: var(--font-mono); font-size: 0.6875rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ash); }
+.navbar .nav-link:hover { color: var(--color-bone); }
+.navbar .nav-link.active { color: var(--color-sand); }
+
+/* Navbar toggler icon: Bootstrap's default toggler icon is dark and invisible
+   on our black background, so override with a light stroke SVG data URI. */
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23f4ece4' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+.navbar-toggler {
+  color: var(--color-bone);
+}
+
+/* Footer links: the site-wide anchor colour (--bs-link-color and
+   --bs-link-color-rgb, fixed at the root above) is sand. Here in the
+   footer we restyle to ash-by-default/sand-on-hover so footer links read as
+   quieter chrome than in-body links, not as a colour-fix workaround. */
+footer a {
+  color: var(--color-ash);
+  text-decoration: none;
+}
+footer a:hover,
+footer a:focus-visible {
+  color: var(--color-sand);
+}
+/* The Buy CTA (.btn-sand) is matched by nav.js's active-link selector too,
+   but it is already sand-filled, so .nav-link.active's colour swap has
+   nothing to change. Mark it "current page" with a bone ring instead —
+   distinct from the hover/focus-visible state (which swaps the fill to
+   bone) and from ordinary sand fill, no second hue introduced. */
+.navbar .btn.active {
+  outline: 2px solid var(--color-bone);
+  outline-offset: 2px;
+}
+/* Bootstrap's generic .btn.active rule repaints background-color, color and
+   border-color from --bs-btn-active-* vars, which wipes out .btn-sand's
+   fill entirely the moment nav.js adds "active" to it. Re-assert the sand
+   plate so the CTA keeps its fill and only gains the bone ring above. */
+.btn-sand.active {
+  background-color: var(--color-sand);
+  color: var(--color-ink);
+  border-color: var(--color-sand);
+}
+/* .btn-sand.active and .btn-sand:hover are both (0,2,0)-specificity and
+   .active is declared later, so without this the active (current-page) CTA
+   never regains its hover fill swap. Re-assert it explicitly so hover still
+   works on top of the active state. */
+.btn-sand.active:hover {
+  background-color: var(--color-bone);
+  color: var(--color-ink);
+  border-color: var(--color-bone);
+}
+
+.card { background: var(--color-carbon); border: 1px solid var(--color-graphite);
+  border-radius: 0; }
+.card-title.type-heading { font-family: var(--font-display); color: var(--color-bone);
+  font-size: 1.25rem; }
+
+.table { --bs-table-bg: transparent; --bs-table-color: var(--color-bone);
+  --bs-table-border-color: var(--color-graphite); }
+.table th:first-child { font-family: var(--font-mono); font-size: 0.6875rem;
+  font-weight: normal; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ash); }
+
+.accordion { --bs-accordion-bg: transparent; --bs-accordion-color: var(--color-bone);
+  --bs-accordion-border-color: var(--color-graphite);
+  --bs-accordion-btn-color: var(--color-bone);
+  --bs-accordion-active-bg: transparent;
+  --bs-accordion-active-color: var(--color-sand);
+  --bs-accordion-btn-focus-box-shadow: none;
+  --bs-accordion-border-radius: 0;
+  /* Bootstrap's default chevron icons are fixed-color SVGs (closed: near-black
+     #212529, open: blue #052c65) that ignore --bs-accordion-color entirely, so
+     without this the open state shows Bootstrap blue. Re-stroke both in our
+     accent colors. */
+  --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f4ece4' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M2 5L8 11L14 5'/%3e%3c/svg%3e");
+  --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23d9a97e' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M2 5L8 11L14 5'/%3e%3c/svg%3e"); }
+/* Suppressing Bootstrap's blue accordion focus box-shadow above (via
+   --bs-accordion-btn-focus-box-shadow: none) also removes the button's only
+   focus indicator, since Bootstrap zeroes its own outline unconditionally.
+   Replace it with the site's bone ring so keyboard focus stays visible. */
+.accordion-button:focus-visible {
+  outline: 2px solid var(--color-bone);
+  outline-offset: -2px;
+}
+
+.form-control, .form-select {
+  background-color: var(--color-carbon); border: 1px solid var(--color-field-border);
+  border-radius: 0; color: var(--color-bone);
+  /* Bootstrap's default select chevron is stroked %23343a40 (near-black),
+     which is effectively invisible against our carbon field. Bootstrap
+     ships a light-chevron variant, but only inside its
+     [data-bs-theme=dark] block, which nothing on this site sets. Re-stroke
+     the chevron in the same bone used for the accordion icons above. */
+  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f4ece4' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+.form-control:focus, .form-select:focus {
+  background-color: var(--color-carbon); color: var(--color-bone);
+  border-color: var(--color-sand); box-shadow: none; }
+.form-label { font-family: var(--font-mono); font-size: 0.6875rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ash); }
+
+/* Browser-drawn surfaces. The scrollbar, the caret and the default numeral
+   set all ship with UA styling that belongs to no design system; theme them
+   from the same three values as everything else. */
+html {
+  scrollbar-color: var(--color-graphite) var(--color-ink);
+  scrollbar-width: thin;
+  caret-color: var(--color-sand);
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-ink); }
+::-webkit-scrollbar-thumb { background: var(--color-graphite); border: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-field-border); }
+
+/* Underlines sit off the baseline far enough to clear descenders in
+   Instrument Sans, and thin enough not to read as a second rule. */
+a { text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+
+/* Measured values line up column-wise: the spec table, the price, and the
+   numeric fields on the order form. */
+.table, .type-price, .form-control {
+  font-variant-numeric: tabular-nums;
+}

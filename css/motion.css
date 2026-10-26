@@ -1,0 +1,241 @@
+/* motion.css — cross-document page transitions and scroll-driven reveals.
+   Pure CSS, no build step, no JavaScript. Every rule here is an enhancement
+   on top of a site that is already complete without it:
+
+   - View Transitions need two same-origin documents, so they are inert on
+     file:// (each file URL is its own opaque origin) and in Firefox, which
+     ships same-document transitions only. Those visitors get the plain
+     navigation that shipped before this file existed.
+   - Scroll-driven reveals sit behind @supports; without support the
+     elements simply stay in their normal, already-visible state.
+   - Everything is suppressed under prefers-reduced-motion at the bottom of
+     this file.
+
+   Serve over HTTP (`py -m http.server 8000`) to see the transitions. */
+
+@view-transition {
+  navigation: auto;
+}
+
+/* ---------------------------------------------------------------- Shared
+   elements. A name must be unique within a document and identical across
+   documents for the pair to morph. Four names carry the whole system:
+
+   site-nav / site-footer  chrome that must hold still while the page under
+                           it changes, instead of cross-fading with it
+   page-title              the <h1>, which flies and resizes from the hero
+                           display type on index.html to the page heading
+                           on features / specs / buy
+   product-render          the hero headphone render, shared by index.html
+                           and buy.html only. The exploded poster on
+                           specs.html deliberately does NOT take this name:
+                           it sits four viewports down its scroll track, so
+                           pairing it would animate a flight the length of
+                           the page. */
+
+.navbar { view-transition-name: site-nav; }
+.site-footer { view-transition-name: site-footer; }
+main h1 { view-transition-name: page-title; }
+.product-render { view-transition-name: product-render; }
+
+/* The chrome holds: geometry is identical on both sides, so the default
+   cross-fade only risks a double-painted frame. */
+::view-transition-old(site-nav),
+::view-transition-new(site-nav),
+::view-transition-old(site-footer),
+::view-transition-new(site-footer) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Title and render morph on the site's ease-out; the outgoing copy of the
+   title leaves early so two different weights never sit blurred on top of
+   each other mid-flight. These two stay sharp for the whole navigation —
+   they are captured out of the root snapshot, so the focus pull applied to
+   the root below never touches them. That is the whole effect: the camera
+   racks focus between two pages while holding on the product. */
+::view-transition-group(page-title),
+::view-transition-group(product-render) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+::view-transition-old(page-title),
+::view-transition-old(product-render) {
+  animation: vt-out 200ms linear both;
+}
+::view-transition-new(page-title),
+::view-transition-new(product-render) {
+  animation: vt-in 380ms 140ms linear both;
+}
+
+/* Everything that is not a named element: the focus pull. The outgoing page
+   defocuses and falls back a fraction; the incoming one arrives out of
+   focus and slightly oversized, then resolves. Blur radii are small enough
+   to stay on one compositor pass at 1440px and on a phone. */
+::view-transition-old(root) {
+  animation: defocus-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+/* The incoming half of the pull is NOT applied here. The new document is
+   live while the transition runs, so its own <main> entry below already
+   racks it into focus; putting a second blur on the root snapshot would
+   stack the two and double the radius. Root only carries the fade. */
+::view-transition-new(root) {
+  animation: vt-in 300ms 120ms linear both;
+}
+
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; } }
+
+@keyframes defocus-out {
+  from { opacity: 1; filter: blur(0); transform: scale(1); }
+  to { opacity: 0; filter: blur(10px); transform: scale(0.994); }
+}
+/* Blur and opacity only, deliberately no scale: <main> holds the elements
+   that are captured by name (the page title, the product render), and
+   animating a transform on their live ancestor while the transition
+   measures them makes the morph jitter. The scale lives on the outgoing
+   snapshot above, where nothing is extracted from it. */
+@keyframes focus-in {
+  from { opacity: 0; filter: blur(14px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+/* ------------------------------------------------------------ Focus in
+   The incoming half of the pull, on <main> rather than on the transition
+   pseudo-element, so it is identical whether the page was reached by a view
+   transition, a cold load, a reload, or file://. The morphing title and
+   render sit outside this element's blur; the navbar and footer are named
+   and captured separately, so the chrome stays sharp while the page body
+   resolves.
+
+   index.html is excluded: its hero already carries an authored entry of its
+   own, and stacking a second blur over it only muddies the display type.
+   Where :has() is unsupported the rule drops entirely and the page simply
+   arrives, which is the correct fallback. */
+main:not(:has(.hero)) {
+  animation: focus-in 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ------------------------------------------------------ Hero entry (index)
+   index.html's own version of the focus pull, staged across the hero rather
+   than applied to the page as one block: the display type resolves first,
+   the lede and actions follow it, and the render settles from slightly
+   oversized. This is why index is excluded from the <main> rule above. */
+.hero .type-display {
+  animation: rise-focus 900ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero .lede {
+  animation: rise 800ms 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero .hero-actions {
+  animation: rise 800ms 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero .hero-image-wrap {
+  animation: settle 1100ms 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes rise-focus {
+  from { opacity: 0; transform: translate3d(0, 1.1rem, 0); filter: blur(10px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 0.9rem, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes settle {
+  from { opacity: 0; transform: scale(1.045); }
+  to { opacity: 1; transform: none; }
+}
+
+/* -------------------------------------------------------- Scroll progress
+   A hairline under the fixed navbar, scaled by document scroll. Chrome and
+   Safari only; elsewhere the rail is never painted at all, which is why the
+   element carries no background of its own outside this block. */
+.scroll-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 1035;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-rail {
+    background: var(--color-sand);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: rail-fill linear both;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes rail-fill {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+}
+
+/* --------------------------------------------------------- Scroll reveals
+   Three different moves, not one entrance repeated: section headings rise
+   out of focus, the teaser cards wipe open from their leading edge on a
+   staggered range, and spec rows lift as a list. Each is scroll-linked, so
+   scrubbing back up plays it in reverse rather than replaying it. */
+@supports (animation-timeline: view()) {
+  .section .type-subhead {
+    animation: rise-focus linear both;
+    animation-timeline: view();
+    animation-range: entry 12% cover 34%;
+  }
+
+  .teaser-card {
+    animation: card-open linear both;
+    animation-timeline: view();
+  }
+  .col-md-4:nth-child(1) .teaser-card { animation-range: entry 8% entry 62%; }
+  .col-md-4:nth-child(2) .teaser-card { animation-range: entry 14% entry 68%; }
+  .col-md-4:nth-child(3) .teaser-card { animation-range: entry 20% entry 74%; }
+
+  @keyframes card-open {
+    from { opacity: 0; clip-path: inset(0 100% 0 0); }
+    to { opacity: 1; clip-path: inset(0 0 0 0); }
+  }
+
+  .table tbody tr {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 4% entry 46%;
+  }
+
+  .price-strip {
+    animation: rise-focus linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 30%;
+  }
+}
+
+/* ---------------------------------------------------------- Reduced motion
+   No focus pull, no entry, no scroll-linked reveal, no cross-document
+   animation. Every element sits in its normal, fully visible state. */
+@media (prefers-reduced-motion: reduce) {
+  main:not(:has(.hero)),
+  .hero .type-display,
+  .hero .lede,
+  .hero .hero-actions,
+  .hero .hero-image-wrap,
+  .section .type-subhead,
+  .teaser-card,
+  .table tbody tr,
+  .price-strip {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+    clip-path: none;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

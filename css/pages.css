@@ -1,0 +1,245 @@
+/* pages.css — page-specific layout only. Component styling lives in theme.css. */
+
+/* Hero section */
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  background: var(--color-ink);
+  padding-top: 6rem;
+}
+.hero .hero-copy p.lede {
+  color: var(--color-ash);
+  max-width: 34rem;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.hero-image-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+/* Positioning section */
+.positioning-copy p {
+  color: var(--color-ash);
+  max-width: 40rem;
+}
+
+/* Feature teaser cards */
+.teaser-card {
+  display: block;
+  text-decoration: none;
+  height: 100%;
+  padding: 2rem;
+  border-color: var(--color-graphite);
+  transition: border-color 0.15s ease;
+}
+.teaser-card:hover {
+  border-color: var(--color-sand);
+}
+.teaser-card .type-mono {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.teaser-card h3 {
+  font-family: var(--font-display);
+  color: var(--color-bone);
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+.teaser-card p {
+  color: var(--color-ash);
+  margin: 0;
+}
+
+/* Price strip */
+.price-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .price-strip {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* Page heading (features/specs/buy): clears the fixed navbar since these
+   pages have no full-height hero above it. */
+.page-heading {
+  padding-top: 8rem;
+}
+
+/* Teardown scroll-scrub stage (specs.html). Background is var(--color-ink)
+   (#000000) only — never a gradient or tint, since the exploded renders are
+   crushed to luma 0 and any wash behind them shows the image's bounding box
+   as a visible rectangle. */
+.teardown-track {
+  position: relative;
+  height: 400vh;
+}
+.teardown-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--color-ink);
+  overflow: hidden;
+}
+.teardown-stage img,
+.teardown-stage canvas {
+  max-height: 86vh;
+  width: auto;
+}
+
+/* Under reduced motion, teardown.js draws a single static frame instead of
+   scrubbing, so the 400vh scroll track that exists purely to drive that
+   scrub no longer serves any purpose — collapse it to the stage's own
+   height so those users don't scroll four empty viewports. */
+@media (prefers-reduced-motion: reduce) {
+  .teardown-track {
+    height: 100vh;
+  }
+}
+
+/* Callouts: hairline leader + dot terminal + mono label. No numbered
+   markers — content is not a sequence. Positioned as percentages of the
+   stage so they track the (centered, max-height-constrained) product
+   render at 1440px. Hidden below md, where the render is too small for
+   leader lines to land meaningfully. */
+.callout {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  pointer-events: none;
+}
+.callout-line {
+  display: block;
+  height: 1px;
+  width: 4.5rem;
+  background: var(--color-graphite);
+}
+.callout-dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-sand);
+  order: -1;
+  margin-right: -0.6rem;
+}
+.callout-label {
+  white-space: nowrap;
+  margin: 0;
+}
+
+.callout-1 { top: 18%; left: 8%; }
+.callout-1 .callout-line { order: 2; }
+.callout-1 .callout-dot { order: 1; margin-right: 0; margin-left: -0.6rem; }
+.callout-2 { top: 38%; right: 8%; flex-direction: row-reverse; }
+.callout-3 { bottom: 30%; left: 10%; }
+.callout-3 .callout-line { order: 2; }
+.callout-3 .callout-dot { order: 1; margin-right: 0; margin-left: -0.6rem; }
+.callout-4 { bottom: 16%; right: 10%; flex-direction: row-reverse; }
+
+@media (max-width: 767.98px) {
+  .callout {
+    display: none;
+  }
+}
+
+/* Buy page: colourway plates. Built as visually-hidden radios with styled
+   label plates rather than styling .form-check-input directly — Bootstrap's
+   native radio ships a blue checked fill (#0d6efd), a blue focus ring
+   (rgba(13,110,253,.25)) and a checked-dot thumb baked in as a data-URI SVG
+   with fill='%2386b7fe', none of which theme.css's CSS-variable overrides
+   reach (the same class of problem Task 3/4 hit with link colour and the
+   accordion chevron). Hiding the input and painting the <label> instead
+   keeps the site's fill-separation rule (solid sand plate = selected,
+   graphite hairline = unselected) and touches zero Bootstrap blue. */
+.colourway-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.colourway-label {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--color-graphite);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ash);
+  cursor: pointer;
+  user-select: none;
+}
+.colourway-input:checked + .colourway-label {
+  background: var(--color-sand);
+  border-color: var(--color-sand);
+  color: var(--color-ink);
+}
+.colourway-input:focus-visible + .colourway-label {
+  outline: 2px solid var(--color-bone);
+  outline-offset: 2px;
+}
+
+/* Buy page: order form validation states. Bootstrap's invalid state (red)
+   is a legitimate semantic signal and is left in place, but two things need
+   fixing: (1) theme.css's own .form-control:focus / .form-select:focus rule
+   sets border-color to sand unconditionally, which would override the red
+   invalid border the moment an invalid field is focused, so re-assert red
+   on focus for invalid fields specifically; (2) Bootstrap's *valid* state
+   is green (border, focus ring, and a green check-mark icon baked into
+   form-control/form-select as data-URI backgrounds) — a second decorative
+   hue this site does not use anywhere else, so it is suppressed outright. */
+.was-validated .form-control:invalid:focus,
+.was-validated .form-select:invalid:focus,
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.was-validated .form-control:valid,
+.form-control.is-valid,
+.was-validated .form-control:valid:focus,
+.form-control.is-valid:focus {
+  border-color: var(--color-graphite);
+  background-image: none;
+  padding-right: 0.75rem;
+  box-shadow: none;
+}
+.was-validated textarea.form-control:valid {
+  padding-right: 0.75rem;
+}
+
+/* .form-select composites TWO layers into background-image:
+   var(--bs-form-select-bg-img) [the dropdown chevron, present in every
+   state] and var(--bs-form-select-bg-icon, none) [the green valid / red
+   invalid tick]. Setting background-image: none on the shorthand (as the
+   .form-control rule above does) would kill the chevron along with the
+   tick, since a <select> has no dropdown affordance otherwise. So the
+   valid-state select override only clears the icon layer, leaving the
+   chevron layer intact. */
+.was-validated .form-select:valid,
+.form-select.is-valid,
+.was-validated .form-select:valid:focus,
+.form-select.is-valid:focus {
+  border-color: var(--color-graphite);
+  /* Bootstrap's own valid-state selector is
+     `.was-validated .form-select:valid:not([multiple]):not([size])`, whose
+     extra :not() clauses out-specificity the plain selector above, so the
+     override needs !important to actually win the icon layer. */
+  --bs-form-select-bg-icon: none !important;
+  box-shadow: none;
+}
