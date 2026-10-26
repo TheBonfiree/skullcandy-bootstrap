@@ -44,3 +44,11 @@ instead. Nothing else differs.
 - `vendor/fonts/` — Archivo (variable, wdth/wght), Instrument Sans
   (variable, wght), and IBM Plex Mono (weight 500), vendored locally with
   `fonts.css`.
+
+## Screenshots
+
+![Desktop — hero](screenshots/desktop.png)
+
+![Desktop — scrolled](screenshots/desktop-2.png)
+
+<img src="screenshots/mobile.png" alt="Mobile" width="320">
